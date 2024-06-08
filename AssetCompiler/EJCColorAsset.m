@@ -12,9 +12,10 @@
         // TODO - Support non-sRGB colorspaces
         // TODO - Support more than one version of a color
         if([color[@"idiom"] isEqual: @"universal"]
-        && ![color objectForKey: @"appearances"] 
-        && [color[@"color"][@"color-space"] isEqual: @"srgb"]) {
-            return [EJCColorAsset colorForColorDictionary: color];
+        && ![color objectForKey: @"appearances"]) {
+        // && [color[@"color"][@"color-space"] isEqual: @"srgb"]) {
+            NSColor* retColor = [EJCColorAsset colorForColorDictionary: color];
+            if(retColor) return retColor;
         }
     }
     NSWarnMLog(@"Could not find main color for color set with colors: %@", colors);
@@ -27,6 +28,9 @@
                                    green: (CGFloat)[colorInfo[@"green"] doubleValue] 
                                     blue: (CGFloat)[colorInfo[@"blue"] doubleValue] 
                                    alpha: (CGFloat)[colorInfo[@"alpha"] doubleValue]];
+    } else if([colorInfo[@"color-space"] isEqual: @"gray-gamma-22"]) {
+        return [NSColor colorWithGenericGamma22White: (CGFloat)[colorInfo[@"white"] doubleValue]
+                                               alpha: (CGFloat)[colorInfo[@"alpha"] doubleValue]];
     } else {
         NSWarnMLog(@"Could not parse color for color dictionary: %@", dictionary);
         return nil;
